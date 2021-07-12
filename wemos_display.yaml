@@ -1,0 +1,292 @@
+esphome:
+  name: wemos_display
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: !secret ssid
+  password: !secret wlan_pwd
+  fast_connect: true
+  # Optional manual IP
+  manual_ip:
+    static_ip: 192.168.0.141
+    gateway: 192.168.0.1
+    subnet: 255.255.255.0
+
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Wemos Display Fallback Hotspot"
+    password: "dDES3QVg9Asp"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+spi:
+  clk_pin: D0
+  mosi_pin: D1
+
+display:
+  - platform: waveshare_epaper
+    id: epaper
+    cs_pin: D2
+    dc_pin: D3
+    busy_pin: D4
+    reset_pin: D5
+    model: 2.90in
+    rotation: 90°
+    full_update_every: 180
+    lambda: |-
+      it.strftime(295, 0, id(comic15), TextAlign::TOP_RIGHT, "%H:%M", id(esptime).now());
+      it.strftime(140, 0, id(comic15), TextAlign::TOP_LEFT, "%d-%b-%y", id(esptime).now());
+      it.strftime(30, 0, id(comic15), TextAlign::TOP_LEFT, "%A", id(esptime).now());
+      // Print line underneath date and time
+      it.line(0, 20, 296, 20);
+      // Print Wetter Info
+      it.printf(20, 22, id(comic15), "Wetterinfo:");
+      it.printf(5, 38, id(comic15), "Heute:");
+      // Print Wetter Symbol
+      if (id(current_condition).has_state()) {
+        std::map<std::string, std::string> weather_icon_map
+          {
+            {"clear-night", "\U000F0594"},
+            {"cloudy", "\U000F0590"},
+            {"exceptional", "\U000F069B"},
+            {"fog", "\U000F0591"},
+            {"hail", "\U000F0592"},
+            {"lightning","\U000F0593"},
+            {"lightning-rainy", "\U000F067E"},
+            {"partlycloudy", "\U000F0595"},
+            {"pouring", "\U000F0596"},
+            {"rainy", "\U000F0597"},
+            {"snwoy", "\U000F0598"},
+            {"snowy-rainy", "\U000F067F"},
+            {"sunny", "\U000F0599"},
+            {"windy", "\U000F059D"},
+            {"windy-variant", "\U000F059E"},
+          };
+            it.printf(20, 60, id(icon_font30), TextAlign::TOP_LEFT , weather_icon_map[id(current_condition).state.c_str()].c_str());
+      }
+      // Print Wetter Forecast
+      it.printf(65, 38, id(comic15), "Morgen:");
+      if (id(forecast_condition).has_state()) {
+        std::map<std::string, std::string> weather_icon_map2
+          {
+            {"clear-night", "\U000F0594"},
+            {"cloudy", "\U000F0590"},
+            {"exceptional", "\U000F069B"},
+            {"fog", "\U000F0591"},
+            {"hail", "\U000F0592"},
+            {"lightning", "\U000F0593"},
+            {"lightning-rainy", "\U000F067E"},
+            {"partlycloudy", "\U000F0595"},
+            {"pouring", "\U000F0596"},
+            {"rainy", "\U000F0597"},
+            {"snwoy", "\U000F0598"},
+            {"snowy-rainy", "\U000F067F"},
+            {"sunny", "\U000F0599"},
+            {"windy", "\U000F059D"},
+            {"windy-variant", "\U000F059E"},
+          }; 
+            it.printf(80, 60, id(icon_font30), TextAlign::TOP_LEFT, weather_icon_map2[id(forecast_condition).state.c_str()].c_str());
+      }
+      // Mondphase anzeigen
+      it.printf(135, 22, id(comic15), TextAlign::TOP_LEFT, "Mond-");
+      it.printf(135, 39, id(comic15), TextAlign::TOP_LEFT, "phase:");
+      
+      if (id(moon).has_state()) {
+        std::map<std::string, std::string> moon_icon_map
+        {
+          {"new_moon", "\U000F0F64"},
+          {"full_moon", "\U000F0F62"},
+          {"waxing_crescent", "\U000F0F67"},
+          {"first_quarter", "\U000F0F61"},
+          {"waxing_gibbous", "\U000F0F68"},
+          {"waning_gibbous", "\U000F0F66"},
+          {"lightning-rainy", "\U000F067E"},
+          {"last_quarter", "\U000F0F63"},
+          {"waning_crescent", "\U000F0F65"},
+        };
+          it.printf(155, 80, id(icon_font30), TextAlign::CENTER, moon_icon_map[id(moon).state.c_str()].c_str());
+      }
+      
+
+      
+      // Print outside temperature (from homeassistant sensor)
+      if (id(outside_temperature).has_state()) {
+        it.printf(40, 100, id(comic15), TextAlign::CENTER , "%.1f°", id(outside_temperature).state);
+      }
+      it.printf(10, 100, id(icon_font15), TextAlign::CENTER, "\U000F0599"); 
+      
+      // Print inside temperature (from homeassistant sensor)
+      if (id(inside_temperature).has_state()) {
+        it.printf(40, 120, id(comic15), TextAlign::CENTER , "%.1f°", id(inside_temperature).state);
+      }
+      it.printf(10, 120, id(icon_font15), TextAlign::CENTER, "\U000F04B9"); 
+      
+      // Print forecast temperature (from homeassistant sensor)
+      if (id(forecast_temp).has_state()) {
+        it.printf(102, 100, id(comic15), TextAlign::CENTER , "%.1f°", id(forecast_temp).state);
+      }
+      it.printf(75, 100, id(icon_font15), TextAlign::CENTER, "\U000F0737");      
+
+      // Print forecast_low temperature (from homeassistant sensor)
+      if (id(forecast_temp_low).has_state()) {
+        it.printf(102, 120, id(comic15), TextAlign::CENTER , "%.1f°", id(forecast_temp_low).state);
+      }  
+      it.printf(75, 120, id(icon_font15), TextAlign::CENTER, "\U000F072E");  
+      
+      // Print line behind weather info
+      it.line(130, 20, 130, 128);
+      
+      // Print inside temperature (from homeassistant sensor)
+      // if (id(inside_temperature).has_state()) {
+      //   it.printf(127, 80, id(font3), TextAlign::TOP_RIGHT , "%.1f°", id(inside_temperature).state);
+      // }
+
+
+font:
+  - file: 'fonts/comicbd.ttf'
+    id: comic15
+    size: 15
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','ü', 'ä', 'ö', '/','º','µ','³']
+  - file: 'fonts/comic.ttf'
+    id: comic20
+    size: 20
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','ü', 'ä', 'ö', '/','º','µ','³']  
+
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: icon_font30
+    size: 30
+    glyphs:
+      - "\U000F0590" # weather-cloudy
+      - "\U000F0F2F" # weather-cloudy-alert
+      - "\U000F0E6E" # weather-cloudy-arrow-right
+      - "\U000F0591" # weather-fog
+      - "\U000F0592" # weather-hail
+      - "\U000F0F30" # weather-hazy
+      - "\U000F0898" # weather-hurricane
+      - "\U000F0593" # weather-lightning
+      - "\U000F067E" # weather-lightning-rainy
+      - "\U000F0594" # weather-night
+      - "\U000F0F31" # weather-night-partly-cloudy
+      - "\U000F0595" # weather-partly-cloudy
+      - "\U000F0F32" # weather-partly-lightning
+      - "\U000F0F33" # weather-partly-rainy
+      - "\U000F0F34" # weather-partly-snowy
+      - "\U000F0F35" # weather-partly-snowy-rainy
+      - "\U000F0596" # weather-pouring
+      - "\U000F0597" # weather-rainy
+      - "\U000F0598" # weather-snowy
+      - "\U000F0F36" # weather-snowy-heavy
+      - "\U000F067F" # weather-snowy-rainy
+      - "\U000F0599" # weather-sunny
+      - "\U000F0F37" # weather-sunny-alert
+      - "\U000F14E4" # weather-sunny-off
+      - "\U000F059A" # weather-sunset
+      - "\U000F059B" # weather-sunset-down
+      - "\U000F059C" # weather-sunset-up
+      - "\U000F0F38" # weather-tornado
+      - "\U000F059D" # weather-windy
+      - "\U000F059E" # weather-windy-variant
+      - "\U000F069B" # emoticon-dead-outline for weather exeptional
+      - "\U000F0F61" # moon-first-quarter
+      - "\U000F0F62" # moon-full
+      - "\U000F0F63" # moon-last-quarter
+      - "\U000F0F64" # moon-new
+      - "\U000F0F65" # moon-waning-crescent
+      - "\U000F0F66" # moon-waning-gibbous
+      - "\U000F0F67" # moon-waxing-cresent
+      - "\U000F0F68" # moon-waxing-gibbous
+
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: icon_font20
+    size: 20
+    glyphs:
+      - "\U000F0F61" # moon-first-quarter
+      - "\U000F0F62" # moon-full
+      - "\U000F0F63" # moon-last-quarter
+      - "\U000F0F64" # moon-new
+      - "\U000F0F65" # moon-waning-crescent
+      - "\U000F0F66" # moon-waning-gibbous
+      - "\U000F0F67" # moon-waxing-cresent
+      - "\U000F0F68" # moon-waxing-gibbous
+
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: icon_font15
+    size: 15
+    glyphs:
+      - "\U000F0737" # arrow-up-bold
+      - "\U000F072E" # arrow-down-bold
+      - "\U000F02DC" # home
+      - "\U000F04B9" # sofa
+      - "\U000F0599" # sun
+
+time:
+  - platform: homeassistant
+    id: esptime
+    timezone: Europe/Berlin
+
+sensor:
+  - platform: wifi_signal
+    name: "Wemos Display WiFi Signal"
+    update_interval: 900s
+  - platform: uptime
+    name: "Wemos Display Uptime"
+  - platform: homeassistant
+    id: outside_temperature
+    entity_id: sensor.aussentemperatur
+    internal: true
+  - platform: homeassistant
+    id: inside_temperature
+    entity_id: sensor.multisensor_wohnzimmer_2
+    internal: true
+  - platform: homeassistant
+    id: forecast_temp
+    entity_id: sensor.openweathermap_forecast_temperature
+    internal: true
+  - platform: homeassistant
+    id: forecast_temp_low
+    entity_id: sensor.openweathermap_forecast_temperature_low
+    internal: true
+text_sensor:
+  - platform: homeassistant
+    id: moon
+    entity_id: sensor.moon
+    internal: true
+  - platform: homeassistant
+    id: forecast_condition
+    entity_id: sensor.openweathermap_forecast_condition
+    internal: true
+  - platform: homeassistant
+    id: current_condition
+    entity_id: sensor.openweathermap_condition
+    internal: true
+  - platform: wifi_info
+    ip_address:
+      name: "Wemos Dislpay IP"
+    
+switch:
+  - platform: restart
+    name: "Wemos Display Restart"
+  - platform: shutdown
+    name: "Wemos Display Shutdown"
