@@ -1,12 +1,14 @@
 esphome:
-  name: wemos_display
-  platform: ESP8266
-  board: d1_mini
+  name: esp32-display
+  platform: ESP32
+  board: esp32dev
 
 wifi:
-  ssid: !secret ssid
-  password: !secret wlan_pwd
-  fast_connect: true
+  networks:
+    - ssid: !secret ssid
+      bssid: CC:CE:1E:D8:20:7D
+      password: !secret wlan_pwd
+  # fast_connect: true
   # Optional manual IP
   manual_ip:
     static_ip: 192.168.0.141
@@ -30,16 +32,16 @@ api:
 ota:
 
 spi:
-  clk_pin: D0
-  mosi_pin: D1
+  clk_pin: GPIO13
+  mosi_pin: GPIO14
 
 display:
   - platform: waveshare_epaper
     id: epaper
-    cs_pin: D2
-    dc_pin: D3
-    busy_pin: D4
-    reset_pin: D5
+    cs_pin: GPIO15
+    dc_pin: GPIO27
+    busy_pin: GPIO25
+    reset_pin: GPIO26
     model: 2.90in
     rotation: 90°
     full_update_every: 180
@@ -61,7 +63,7 @@ display:
             {"exceptional", "\U000F069B"},
             {"fog", "\U000F0591"},
             {"hail", "\U000F0592"},
-            {"lightning","\U000F0593"},
+            {"lightning", "\U000F0593"},
             {"lightning-rainy", "\U000F067E"},
             {"partlycloudy", "\U000F0595"},
             {"pouring", "\U000F0596"},
@@ -117,29 +119,41 @@ display:
           it.printf(155, 80, id(icon_font30), TextAlign::CENTER, moon_icon_map[id(moon).state.c_str()].c_str());
       }
       
-
+      // Print line behind moon phase
+      it.line(185, 20, 185, 128);
+      
+      // Print sunrise and sun setting dates
+      it.printf(195, 25, id(icon_font25), TextAlign::TOP_LEFT, "\U000F059C");
+      if (id(next_sunrise).has_state()) {
+        it.printf(225, 22, id(comic15), TextAlign::TOP_LEFT, "%s", id(next_sunrise).state.c_str());
+      }
+      it.printf(195, 53, id(icon_font25), TextAlign::TOP_LEFT, "\U000F059B");
+      if (id(next_sunset).has_state()) {
+        it.printf(225, 55, id(comic15), TextAlign::TOP_LEFT, "%s", id(next_sunset).state.c_str());
+      }
+      
       
       // Print outside temperature (from homeassistant sensor)
       if (id(outside_temperature).has_state()) {
-        it.printf(40, 100, id(comic15), TextAlign::CENTER , "%.1f°", id(outside_temperature).state);
+        it.printf(40, 100, id(comic15), TextAlign::CENTER, "%.1f°", id(outside_temperature).state);
       }
       it.printf(10, 100, id(icon_font15), TextAlign::CENTER, "\U000F0599"); 
       
       // Print inside temperature (from homeassistant sensor)
       if (id(inside_temperature).has_state()) {
-        it.printf(40, 120, id(comic15), TextAlign::CENTER , "%.1f°", id(inside_temperature).state);
+        it.printf(40, 120, id(comic15), TextAlign::CENTER, "%.1f°", id(inside_temperature).state);
       }
       it.printf(10, 120, id(icon_font15), TextAlign::CENTER, "\U000F04B9"); 
       
       // Print forecast temperature (from homeassistant sensor)
       if (id(forecast_temp).has_state()) {
-        it.printf(102, 100, id(comic15), TextAlign::CENTER , "%.1f°", id(forecast_temp).state);
+        it.printf(102, 100, id(comic15), TextAlign::CENTER, "%.1f°", id(forecast_temp).state);
       }
       it.printf(75, 100, id(icon_font15), TextAlign::CENTER, "\U000F0737");      
 
       // Print forecast_low temperature (from homeassistant sensor)
       if (id(forecast_temp_low).has_state()) {
-        it.printf(102, 120, id(comic15), TextAlign::CENTER , "%.1f°", id(forecast_temp_low).state);
+        it.printf(102, 120, id(comic15), TextAlign::CENTER, "%.1f°", id(forecast_temp_low).state);
       }  
       it.printf(75, 120, id(icon_font15), TextAlign::CENTER, "\U000F072E");  
       
@@ -230,6 +244,15 @@ font:
       - "\U000F0F66" # moon-waning-gibbous
       - "\U000F0F67" # moon-waxing-cresent
       - "\U000F0F68" # moon-waxing-gibbous
+      - "\U000F059B" # weather-sunset-down
+      - "\U000F059C" # weather-sunset-up
+  
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: icon_font25
+    size: 25
+    glyphs:
+      - "\U000F059B" # weather-sunset-down
+      - "\U000F059C" # weather-sunset-up
 
   - file: 'fonts/materialdesignicons-webfont.ttf'
     id: icon_font15
@@ -268,7 +291,16 @@ sensor:
     id: forecast_temp_low
     entity_id: sensor.openweathermap_forecast_temperature_low
     internal: true
+
 text_sensor:
+  - platform: homeassistant
+    id: next_sunset
+    entity_id: sensor.esphome_next_sunset
+    internal: true
+  - platform: homeassistant
+    id: next_sunrise
+    entity_id: sensor.esphome_next_sunrise
+    internal: true
   - platform: homeassistant
     id: moon
     entity_id: sensor.moon
@@ -284,7 +316,11 @@ text_sensor:
   - platform: wifi_info
     ip_address:
       name: "Wemos Dislpay IP"
-    
+  - platform: version
+    name: Wemos Display ESPHome Version
+    hide_timestamp: True
+
+
 switch:
   - platform: restart
     name: "Wemos Display Restart"
