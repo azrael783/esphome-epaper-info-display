@@ -3,9 +3,9 @@
 Sharing my esphome code of my e-paper info display showing infos from Home-Assistant. I am using a 2.9in e-paper display from waveshare 
 and a ESP32 flashed with esphome to display mainly weather information fetched from Home-Assistant.
 
-![Page 1](https://raw.githubusercontent.com/azrael783/esphome-epaper-info-display/main/Page1.jpg =50%x)
+![Page 1](https://raw.githubusercontent.com/azrael783/esphome-epaper-info-display/main/Page1.jpg =200x)
 
-![Page 2](https://raw.githubusercontent.com/azrael783/esphome-epaper-info-display/main/Page2.jpg =50%x)
+![Page 2](https://raw.githubusercontent.com/azrael783/esphome-epaper-info-display/main/Page2.jpg =200x)
 
 # Setup
 Before you flash the controller you should check that you have all necessary sensors setup in Home-Assistant. For the sunset and sunrise info I've pulled the timestamp into a separate sensor:
