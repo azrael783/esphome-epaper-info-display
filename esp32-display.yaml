@@ -45,125 +45,154 @@ display:
     model: 2.90in
     rotation: 90°
     full_update_every: 180
-    lambda: |-
-      it.strftime(295, 0, id(comic15), TextAlign::TOP_RIGHT, "%H:%M", id(esptime).now());
-      it.strftime(140, 0, id(comic15), TextAlign::TOP_LEFT, "%d-%b-%y", id(esptime).now());
-      it.strftime(30, 0, id(comic15), TextAlign::TOP_LEFT, "%A", id(esptime).now());
-      // Print line underneath date and time
-      it.line(0, 20, 296, 20);
-      // Print Wetter Info
-      it.printf(20, 22, id(comic15), "Wetterinfo:");
-      it.printf(5, 38, id(comic15), "Heute:");
-      // Print Wetter Symbol
-      if (id(current_condition).has_state()) {
-        std::map<std::string, std::string> weather_icon_map
-          {
-            {"clear-night", "\U000F0594"},
-            {"cloudy", "\U000F0590"},
-            {"exceptional", "\U000F069B"},
-            {"fog", "\U000F0591"},
-            {"hail", "\U000F0592"},
-            {"lightning", "\U000F0593"},
-            {"lightning-rainy", "\U000F067E"},
-            {"partlycloudy", "\U000F0595"},
-            {"pouring", "\U000F0596"},
-            {"rainy", "\U000F0597"},
-            {"snwoy", "\U000F0598"},
-            {"snowy-rainy", "\U000F067F"},
-            {"sunny", "\U000F0599"},
-            {"windy", "\U000F059D"},
-            {"windy-variant", "\U000F059E"},
-          };
-            it.printf(20, 60, id(icon_font30), TextAlign::TOP_LEFT , weather_icon_map[id(current_condition).state.c_str()].c_str());
-      }
-      // Print Wetter Forecast
-      it.printf(65, 38, id(comic15), "Morgen:");
-      if (id(forecast_condition).has_state()) {
-        std::map<std::string, std::string> weather_icon_map2
-          {
-            {"clear-night", "\U000F0594"},
-            {"cloudy", "\U000F0590"},
-            {"exceptional", "\U000F069B"},
-            {"fog", "\U000F0591"},
-            {"hail", "\U000F0592"},
-            {"lightning", "\U000F0593"},
-            {"lightning-rainy", "\U000F067E"},
-            {"partlycloudy", "\U000F0595"},
-            {"pouring", "\U000F0596"},
-            {"rainy", "\U000F0597"},
-            {"snwoy", "\U000F0598"},
-            {"snowy-rainy", "\U000F067F"},
-            {"sunny", "\U000F0599"},
-            {"windy", "\U000F059D"},
-            {"windy-variant", "\U000F059E"},
-          }; 
-            it.printf(80, 60, id(icon_font30), TextAlign::TOP_LEFT, weather_icon_map2[id(forecast_condition).state.c_str()].c_str());
-      }
-      // Mondphase anzeigen
-      it.printf(135, 22, id(comic15), TextAlign::TOP_LEFT, "Mond-");
-      it.printf(135, 39, id(comic15), TextAlign::TOP_LEFT, "phase:");
+    pages:
+      - id: page1
+        lambda: |-
+          it.strftime(295, 0, id(comic15), TextAlign::TOP_RIGHT, "%H:%M", id(esptime).now());
+          it.strftime(140, 0, id(comic15), TextAlign::TOP_LEFT, "%d-%b-%y", id(esptime).now());
+          it.strftime(30, 0, id(comic15), TextAlign::TOP_LEFT, "%A", id(esptime).now());
+          // Print line underneath date and time
+          it.line(0, 20, 296, 20);
+          // Print Wetter Info
+          it.printf(20, 22, id(comic15), "Wetterinfo:");
+          it.printf(5, 38, id(comic15), "Heute:");
+          // Print Wetter Symbol
+          if (id(current_condition).has_state()) {
+            std::map<std::string, std::string> weather_icon_map
+            {
+              {"clear-night", "\U000F0594"},
+              {"cloudy", "\U000F0590"},
+              {"exceptional", "\U000F069B"},
+              {"fog", "\U000F0591"},
+              {"hail", "\U000F0592"},
+              {"lightning", "\U000F0593"},
+              {"lightning-rainy", "\U000F067E"},
+              {"partlycloudy", "\U000F0595"},
+              {"pouring", "\U000F0596"},
+              {"rainy", "\U000F0597"},
+              {"snwoy", "\U000F0598"},
+              {"snowy-rainy", "\U000F067F"},
+              {"sunny", "\U000F0599"},
+              {"windy", "\U000F059D"},
+              {"windy-variant", "\U000F059E"},
+            };
+              it.printf(20, 60, id(icon_font30), TextAlign::TOP_LEFT , weather_icon_map[id(current_condition).state.c_str()].c_str());
+          }
+          // Print Wetter Forecast
+          it.printf(65, 38, id(comic15), "Morgen:");
+          if (id(forecast_condition).has_state()) {
+            std::map<std::string, std::string> weather_icon_map2
+            {
+              {"clear-night", "\U000F0594"},
+              {"cloudy", "\U000F0590"},
+              {"exceptional", "\U000F069B"},
+              {"fog", "\U000F0591"},
+              {"hail", "\U000F0592"},
+              {"lightning", "\U000F0593"},
+              {"lightning-rainy", "\U000F067E"},
+              {"partlycloudy", "\U000F0595"},
+              {"pouring", "\U000F0596"},
+              {"rainy", "\U000F0597"},
+              {"snwoy", "\U000F0598"},
+              {"snowy-rainy", "\U000F067F"},
+              {"sunny", "\U000F0599"},
+              {"windy", "\U000F059D"},
+              {"windy-variant", "\U000F059E"},
+            }; 
+              it.printf(80, 60, id(icon_font30), TextAlign::TOP_LEFT, weather_icon_map2[id(forecast_condition).state.c_str()].c_str());
+          }
+          // Mondphase anzeigen
+          it.printf(135, 22, id(comic15), TextAlign::TOP_LEFT, "Mond-");
+          it.printf(135, 39, id(comic15), TextAlign::TOP_LEFT, "phase:");
       
-      if (id(moon).has_state()) {
-        std::map<std::string, std::string> moon_icon_map
-        {
-          {"new_moon", "\U000F0F64"},
-          {"full_moon", "\U000F0F62"},
-          {"waxing_crescent", "\U000F0F67"},
-          {"first_quarter", "\U000F0F61"},
-          {"waxing_gibbous", "\U000F0F68"},
-          {"waning_gibbous", "\U000F0F66"},
-          {"lightning-rainy", "\U000F067E"},
-          {"last_quarter", "\U000F0F63"},
-          {"waning_crescent", "\U000F0F65"},
-        };
-          it.printf(155, 80, id(icon_font30), TextAlign::CENTER, moon_icon_map[id(moon).state.c_str()].c_str());
-      }
+          if (id(moon).has_state()) {
+            std::map<std::string, std::string> moon_icon_map
+            {
+              {"new_moon", "\U000F0F64"},
+              {"full_moon", "\U000F0F62"},
+              {"waxing_crescent", "\U000F0F67"},
+              {"first_quarter", "\U000F0F61"},
+              {"waxing_gibbous", "\U000F0F68"},
+              {"waning_gibbous", "\U000F0F66"},
+              {"lightning-rainy", "\U000F067E"},
+              {"last_quarter", "\U000F0F63"},
+              {"waning_crescent", "\U000F0F65"},
+            };
+              it.printf(155, 80, id(icon_font30), TextAlign::CENTER, moon_icon_map[id(moon).state.c_str()].c_str());
+          }
       
-      // Print line behind moon phase
-      it.line(185, 20, 185, 128);
+          // Print line behind moon phase
+          it.line(185, 20, 185, 128);
       
-      // Print sunrise and sun setting dates
-      it.printf(195, 25, id(icon_font25), TextAlign::TOP_LEFT, "\U000F059C");
-      if (id(next_sunrise).has_state()) {
-        it.printf(225, 22, id(comic15), TextAlign::TOP_LEFT, "%s", id(next_sunrise).state.c_str());
-      }
-      it.printf(195, 53, id(icon_font25), TextAlign::TOP_LEFT, "\U000F059B");
-      if (id(next_sunset).has_state()) {
-        it.printf(225, 55, id(comic15), TextAlign::TOP_LEFT, "%s", id(next_sunset).state.c_str());
-      }
+          // Print sunrise and sun setting dates
+          it.printf(195, 25, id(icon_font25), TextAlign::TOP_LEFT, "\U000F059C");
+          if (id(next_sunrise).has_state()) {
+            it.printf(225, 22, id(comic15), TextAlign::TOP_LEFT, "%s", id(next_sunrise).state.c_str());
+          }
+          it.printf(195, 53, id(icon_font25), TextAlign::TOP_LEFT, "\U000F059B");
+          if (id(next_sunset).has_state()) {
+            it.printf(225, 55, id(comic15), TextAlign::TOP_LEFT, "%s", id(next_sunset).state.c_str());
+          }
       
       
-      // Print outside temperature (from homeassistant sensor)
-      if (id(outside_temperature).has_state()) {
-        it.printf(40, 100, id(comic15), TextAlign::CENTER, "%.1f°", id(outside_temperature).state);
-      }
-      it.printf(10, 100, id(icon_font15), TextAlign::CENTER, "\U000F0599"); 
+          // Print outside temperature (from homeassistant sensor)
+          if (id(outside_temperature).has_state()) {
+            it.printf(40, 100, id(comic15), TextAlign::CENTER, "%.1f°", id(outside_temperature).state);
+          }
+          it.printf(10, 100, id(icon_font15), TextAlign::CENTER, "\U000F0599"); 
       
-      // Print inside temperature (from homeassistant sensor)
-      if (id(inside_temperature).has_state()) {
-        it.printf(40, 120, id(comic15), TextAlign::CENTER, "%.1f°", id(inside_temperature).state);
-      }
-      it.printf(10, 120, id(icon_font15), TextAlign::CENTER, "\U000F04B9"); 
+          // Print inside temperature (from homeassistant sensor)
+          if (id(inside_temperature).has_state()) {
+            it.printf(40, 120, id(comic15), TextAlign::CENTER, "%.1f°", id(inside_temperature).state);
+          }
+          it.printf(10, 120, id(icon_font15), TextAlign::CENTER, "\U000F04B9"); 
       
-      // Print forecast temperature (from homeassistant sensor)
-      if (id(forecast_temp).has_state()) {
-        it.printf(102, 100, id(comic15), TextAlign::CENTER, "%.1f°", id(forecast_temp).state);
-      }
-      it.printf(75, 100, id(icon_font15), TextAlign::CENTER, "\U000F0737");      
+          // Print forecast temperature (from homeassistant sensor)
+          if (id(forecast_temp).has_state()) {
+            it.printf(102, 100, id(comic15), TextAlign::CENTER, "%.1f°", id(forecast_temp).state);
+          }
+          it.printf(75, 100, id(icon_font15), TextAlign::CENTER, "\U000F0737");      
 
-      // Print forecast_low temperature (from homeassistant sensor)
-      if (id(forecast_temp_low).has_state()) {
-        it.printf(102, 120, id(comic15), TextAlign::CENTER, "%.1f°", id(forecast_temp_low).state);
-      }  
-      it.printf(75, 120, id(icon_font15), TextAlign::CENTER, "\U000F072E");  
+          // Print forecast_low temperature (from homeassistant sensor)
+          if (id(forecast_temp_low).has_state()) {
+            it.printf(102, 120, id(comic15), TextAlign::CENTER, "%.1f°", id(forecast_temp_low).state);
+          }  
+          it.printf(75, 120, id(icon_font15), TextAlign::CENTER, "\U000F072E");  
       
-      // Print line behind weather info
-      it.line(130, 20, 130, 128);
+          // Print line behind weather info
+          it.line(130, 20, 130, 128);
       
-      // Print inside temperature (from homeassistant sensor)
-      // if (id(inside_temperature).has_state()) {
-      //   it.printf(127, 80, id(font3), TextAlign::TOP_RIGHT , "%.1f°", id(inside_temperature).state);
-      // }
+          // Print inside temperature (from homeassistant sensor)
+          // if (id(inside_temperature).has_state()) {
+          //   it.printf(127, 80, id(font3), TextAlign::TOP_RIGHT , "%.1f°", id(inside_temperature).state);
+          // }
+      - id: page2
+        lambda: |-
+          it.strftime(295, 0, id(comic15), TextAlign::TOP_RIGHT, "%H:%M", id(esptime).now());
+          it.strftime(140, 0, id(comic15), TextAlign::TOP_LEFT, "%d-%b-%y", id(esptime).now());
+          it.strftime(30, 0, id(comic15), TextAlign::TOP_LEFT, "%A", id(esptime).now());
+          // Print line underneath date and time
+          it.line(0, 20, 296, 20);
+          // Print Weather Warnings
+          it.printf(20, 22, id(comic15), "Wetterwarnungen:");
+          if (id(akt_warning_level).has_state()) {
+            it.printf(20,45, id(comic15), TextAlign::TOP_LEFT, "Die akt. Warnstufe ist: %s", id(akt_warning_level).state.c_str());
+          }
+          if (id(akt_warning_headline).has_state()) {
+            it.printf(20, 70, id(comic15), TextAlign::TOP_LEFT, "%s", id(akt_warning_headline).state.c_str());
+          }
+          //if (id(akt_warning_text).has_state()) {
+          //  it.printf(20, 70, id(comic15), TextAlign::TOP_LEFT, "%s", id(akt_warning_text).state.c_str());
+          //}
+          
+          
+
+interval:
+  - interval: 5s
+    then:
+      - display.page.show_next: epaper
+      - component.update: epaper
+          
 
 
 font:
@@ -293,6 +322,14 @@ sensor:
     internal: true
 
 text_sensor:
+  - platform: homeassistant
+    id: akt_warning_headline
+    entity_id: sensor.act_weather_warning_headline
+    internal: true
+  - platform: homeassistant
+    id: akt_warning_level
+    entity_id: sensor.act_weather_warning_level
+    internal: true
   - platform: homeassistant
     id: next_sunset
     entity_id: sensor.esphome_next_sunset
